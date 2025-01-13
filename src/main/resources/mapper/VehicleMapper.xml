@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.base.vm.mapper.VehicleMapper">
+
+    <resultMap id="BaseResultMap" type="com.base.vm.entity.VVehicle">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="vehicleNo" column="vehicleNo" jdbcType="VARCHAR"/>
+        <result property="project" column="project" jdbcType="VARCHAR"/>
+        <result property="place" column="place" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="createtime" column="createtime" jdbcType="TIMESTAMP"/>
+        <result property="lon" column="lon" jdbcType="FLOAT"/>
+        <result property="lat" column="lat" jdbcType="FLOAT"/>
+        <result property="reason" column="reason" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="vehicleVOResultMap" type="com.base.vm.entity.vo.VehicleListVO">
+        <!-- 这里定义VehicleDto的属性映射 -->
+        <id property="id" column="id"/>
+        <result property="project" column="project"/>
+        <result property="vehicleNo" column="vehicleNo"/>
+        <result property="state" column="state"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,vehicleno,project,
+        place,state,createtime,
+        lon,lat,
+        reason
+    </sql>
+    <select id="selectVehicleDtoById" resultType="com.base.vm.entity.VVehicle">
+        SELECT id, project, vehicleNo, state, p.name as projectName
+        FROM v_vehicle v
+                 LEFT JOIN v_project p on v.project = p.id
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectAvailableVehicles" resultMap="vehicleVOResultMap">
+        SELECT v.id, p.name as project, vehicleNo, state
+        FROM v_vehicle v
+                 LEFT JOIN v_project p on v.project = p.id
+        WHERE v.state = 1
+    </select>
+    <select id="getVehiclePage" resultType="map">
+        SELECT
+        v.id, v.vehicleno as vehicleNo, v.place, v.state,
+        DATE_FORMAT(v.createtime, '%Y-%m-%d %H:%i:%s') as createTime,
+        p.name as project,
+        CASE WHEN v.state = 0 THEN '不可用' ELSE '可用' END as stateName
+        FROM v_vehicle v
+        LEFT JOIN v_project p ON v.project = p.id
+        <where>
+            <if test="query.blurry != null and query.blurry != ''">
+                AND (
+                v.vehicleno LIKE CONCAT('%', #{query.blurry}, '%')
+                OR p.name LIKE CONCAT('%', #{query.blurry}, '%')
+                )
+            </if>
+        </where>
+        <choose>
+            <when test="query.sort != null and query.sort != ''">
+                <choose>
+                    <when test="query.sort == 'vehicleno'">
+                        ORDER BY v.vehicleno ${query.order == 'desc' ? 'DESC' : 'ASC'}
+                    </when>
+                    <when test="query.sort == 'project'">
+                        ORDER BY p.name ${query.order == 'desc' ? 'DESC' : 'ASC'}
+                    </when>
+                    <when test="query.sort == 'place'">
+                        ORDER BY v.place ${query.order == 'desc' ? 'DESC' : 'ASC'}
+                    </when>
+                    <when test="query.sort == 'state'">
+                        ORDER BY v.state ${query.order == 'desc' ? 'DESC' : 'ASC'}
+                    </when>
+                    <otherwise>
+                        ORDER BY v.id DESC
+                    </otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                ORDER BY v.id DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getVehicleVOPage" resultType="com.base.vm.entity.vo.VehicleDetailVO">
+        SELECT
+        v.id, v.vehicleno as vehicleNo, v.place, v.state,
+        DATE_FORMAT(v.createtime, '%Y-%m-%d %H:%i:%s') as createTime,
+        p.name as project,
+        CASE WHEN v.state = 0 THEN '不可用' ELSE '可用' END as stateName
+        FROM v_vehicle v
+        LEFT JOIN v_project p ON v.project = p.id
+        <where>
+            <if test="query.blurry != null and query.blurry != ''">
+                AND (
+                v.vehicleno LIKE CONCAT('%', #{query.blurry}, '%')
+                OR p.name LIKE CONCAT('%', #{query.blurry}, '%')
+                )
+            </if>
+        </where>
+        <choose>
+            <when test="query.sort != null and query.sort != ''">
+                <choose>
+                    <when test="query.sort == 'vehicleno'">
+                        ORDER BY v.vehicleno ${query.order == 'desc' ? 'DESC' : 'ASC'}
+                    </when>
+                    <when test="query.sort == 'project'">
+                        ORDER BY p.name ${query.order == 'desc' ? 'DESC' : 'ASC'}
+                    </when>
+                    <when test="query.sort == 'place'">
+                        ORDER BY v.place ${query.order == 'desc' ? 'DESC' : 'ASC'}
+                    </when>
+                    <when test="query.sort == 'state'">
+                        ORDER BY v.state ${query.order == 'desc' ? 'DESC' : 'ASC'}
+                    </when>
+                    <otherwise>
+                        ORDER BY v.id DESC
+                    </otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                ORDER BY v.id DESC
+            </otherwise>
+        </choose>
+    </select>
+</mapper>
