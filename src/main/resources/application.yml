@@ -1,0 +1,25 @@
+server:
+  port: 9001
+
+spring:
+  application:
+    name: base-proj
+
+  datasource:
+    url: jdbc:mysql://172.16.18.123:3306/ems-admin?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+      exclude: WEB-INF/**
+
+  thymeleaf:
+    cache: false
