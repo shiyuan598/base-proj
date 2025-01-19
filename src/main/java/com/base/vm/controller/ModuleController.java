@@ -4,6 +4,8 @@ import com.base.common.exception.BadRequestException;
 import com.base.common.utils.ResultUtil;
 import com.base.vm.entity.VModule;
 import com.base.vm.service.ModuleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,14 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Tag(name = "所属模块")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/module")
 public class ModuleController extends ResultUtil {
     @Autowired
     private ModuleService moduleService;
-    @GetMapping
-    public ResponseEntity<Object> index() {
+
+    @Operation(summary = "所属模块列表(字典)")
+    @GetMapping("/dict")
+    public ResponseEntity<Object> listModuleDict() {
         try {
             List<VModule> data = moduleService.findAll();
             return success(true, data);

@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.base.vm.entity.VVehicle;
 import com.base.vm.entity.dto.QueryDTO;
-import com.base.vm.entity.vo.VehicleDetailVO;
+import com.base.vm.entity.vo.VehicleDictVO;
 import com.base.vm.entity.vo.VehicleListVO;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
@@ -18,5 +18,5 @@ public interface VehicleMapper extends BaseMapper<VVehicle> {
     List<VehicleListVO> selectAvailableVehicles();
     @MapKey("id")
     IPage<Map<String, Object>> getVehiclePage(Page<?> page, @Param("query") QueryDTO queryDto);
-    IPage<VehicleDetailVO> getVehicleVOPage(Page<?> page, @Param("query") QueryDTO queryDto);
+    IPage<VehicleDictVO> getVehicleVOPage(Page<?> page, @Param("query") QueryDTO queryDto);
 }

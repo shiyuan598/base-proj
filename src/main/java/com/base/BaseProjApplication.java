@@ -24,7 +24,7 @@ public class BaseProjApplication implements ApplicationListener<ContextRefreshed
             System.out.println("\n----------------------------------------------------------");
             System.out.println("API文档地址：");
             System.out.println("Knife4j文档：http://localhost:" + serverPort + contextPath + "/doc.html");
-            System.out.println("Swagger文档：http://localhost:" + serverPort + contextPath + "/swagger-ui/index.html");
+            System.out.println("Swagger文档：http://localhost:" + serverPort + contextPath + "/swagger-ui/listVehicle.html");
             System.out.println("----------------------------------------------------------\n");
         }
     }

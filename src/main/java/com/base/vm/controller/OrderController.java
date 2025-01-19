@@ -8,16 +8,20 @@ import com.base.vm.entity.VOrder;
 import com.base.vm.entity.dto.OrderQueryDTO;
 import com.base.vm.service.OrderService;
 import io.micrometer.common.util.StringUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "订单相关")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/order")
 public class OrderController extends ResultUtil {
     private final OrderService orderService;
 
+    @Operation(summary = "订单分页列表")
     @GetMapping
     public ResponseEntity<Object> getOrders(OrderQueryDTO queryDto) {
         try {
@@ -71,6 +75,17 @@ public class OrderController extends ResultUtil {
         }
     }
 
+    @Operation(summary = "订单详情")
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getOrder(@PathVariable Long id) {
+        try {
+            return success(true, orderService.getById(id));
+        } catch (BadRequestException e) {
+            return fail(false, "失败");
+        }
+    }
+
+    @Operation(summary = "增加订单")
     @PostMapping
     public ResponseEntity<Object> addOrder(@RequestBody VOrder order) {
         try {
@@ -80,6 +95,7 @@ public class OrderController extends ResultUtil {
         }
     }
 
+    @Operation(summary = "更新订单")
     @PutMapping
     public ResponseEntity<Object> updateOrder(@RequestBody VOrder order) {
         try {

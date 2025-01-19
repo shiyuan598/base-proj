@@ -3,10 +3,10 @@ package com.base.vm.entity.vo;
 import lombok.Data;
 
 @Data
-public class VehicleDetailVO {
+public class VehicleDictVO {
     private Integer id;
-    private String project;
     private String vehicleNo;
+    private String project;
     private Integer state;
     private String stateName;
     private String place;
