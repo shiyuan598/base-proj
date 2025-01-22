@@ -1,12 +1,14 @@
 package com.base.vm.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import java.util.Date;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @TableName v_vehicle
@@ -14,6 +16,7 @@ import java.io.Serializable;
 @TableName(value ="v_vehicle")
 @Data
 public class VVehicle implements Serializable {
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     @TableField("`vehicleno`")

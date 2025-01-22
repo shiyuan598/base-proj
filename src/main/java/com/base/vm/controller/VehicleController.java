@@ -4,8 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.base.common.exception.BadRequestException;
 import com.base.common.utils.ResultUtil;
 import com.base.vm.entity.VVehicle;
+import com.base.vm.entity.dto.AddVehicleDTO;
 import com.base.vm.entity.dto.QueryDTO;
-import com.base.vm.entity.dto.VehicleDTO;
+import com.base.vm.entity.dto.UpdateVehicleDTO;
 import com.base.vm.entity.vo.VehicleDictVO;
 import com.base.vm.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Tag(name = "车辆相关")
 @RestController
@@ -59,7 +61,6 @@ public class VehicleController extends ResultUtil {
     @GetMapping("/pageVo")
     public ResponseEntity<Object> listVehicleVo(@Parameter(description = "模糊搜索关键字")
                                               @RequestParam(required = false) String blurry,
-
                                           @Parameter(description = "当前页码", example = "1")
                                               @RequestParam(defaultValue = "1") long currentPage,
 
@@ -98,7 +99,7 @@ public class VehicleController extends ResultUtil {
 
     @Operation(summary = "添加车辆")
     @PostMapping()
-    public ResponseEntity<Object> addVehicle(@Parameter(description = "车辆信息") @RequestBody VehicleDTO vehicleDTO) {
+    public ResponseEntity<Object> addVehicle(@Parameter(description = "车辆信息") @RequestBody AddVehicleDTO vehicleDTO) {
         try {
             VVehicle vehicle = new VVehicle();
             vehicle.setVehicleNo(vehicleDTO.getVehicleNo());
@@ -114,16 +115,15 @@ public class VehicleController extends ResultUtil {
     }
 
     @Operation(summary = "更新车辆")
-    @PutMapping()
-    public ResponseEntity<Object> updateVehicle(@Parameter(description = "车辆信息") @RequestBody VehicleDTO vehicleDTO) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateVehicle(@Parameter(description = "车辆ID") @PathVariable(value = "id") Integer id,  @Parameter(description = "车辆信息") @RequestBody UpdateVehicleDTO vehicleDTO) {
         try {
-            VVehicle vehicle = new VVehicle();
-            vehicle.setId(vehicleDTO.getId());
-            vehicle.setVehicleNo(vehicleDTO.getVehicleNo());
-            vehicle.setProject(vehicleDTO.getProject());
-            vehicle.setState(vehicleDTO.getState());
-            vehicle.setPlace(vehicleDTO.getPlace());
-            vehicle.setReason(vehicleDTO.getReason());
+            VVehicle vehicle = vehicleService.getById(id);
+            Optional.ofNullable(vehicleDTO.getVehicleNo()).ifPresent(vehicle::setVehicleNo);
+            Optional.ofNullable(vehicleDTO.getProject()).ifPresent(vehicle::setProject);
+            Optional.ofNullable(vehicleDTO.getState()).ifPresent(vehicle::setState);
+            Optional.ofNullable(vehicleDTO.getPlace()).ifPresent(vehicle::setPlace);
+            Optional.ofNullable(vehicleDTO.getReason()).ifPresent(vehicle::setReason);
             vehicleService.updateById(vehicle);
             return success(true, "成功");
         } catch (BadRequestException e) {
@@ -141,6 +141,4 @@ public class VehicleController extends ResultUtil {
             return fail(false, "失败");
         }
     }
-
-
 }
