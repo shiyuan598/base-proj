@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.base.common.exception.BadRequestException;
 import com.base.common.utils.ResultUtil;
 import com.base.vm.entity.VUser;
+import com.base.vm.entity.dto.AddUserDTO;
 import com.base.vm.entity.dto.QueryDTO;
 import com.base.vm.entity.vo.user.UserPageResponse;
 import com.base.vm.service.UserService;
@@ -61,8 +62,14 @@ public class UserController extends ResultUtil {
 
     @Operation(summary = "添加用户")
     @PostMapping
-    public ResponseEntity<Object> addUser(@Parameter(description = "用户") @RequestBody VUser user) {
+    public ResponseEntity<Object> addUser(@Parameter(description = "用户") @RequestBody AddUserDTO userDto) {
         try {
+            VUser user = new VUser();
+            user.setUsername(userDto.getUsername());
+            user.setPassword(userDto.getPassword());
+            user.setName(userDto.getName());
+            user.setTelephone(userDto.getTelephone());
+            user.setRole(userDto.getRole());
             userService.save(user);
             return success(true, "成功");
         } catch (BadRequestException e) {

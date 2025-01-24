@@ -16,8 +16,8 @@ public class AddUserDTO {
     @NotBlank
     private String name;
     @NotNull
-    @Schema(description = "状态，0:不可用，1:可用")
-    private Integer role;
+    @Schema(description = "用户角色 1: 管理员, 2:司机,3:普通用户")
+    private Integer role = 3;
     @NotBlank
     @Schema(description = "手机号")
     private String telephone;
