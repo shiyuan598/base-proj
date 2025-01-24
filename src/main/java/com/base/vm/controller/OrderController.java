@@ -6,7 +6,7 @@ import com.base.common.exception.BadRequestException;
 import com.base.common.utils.ResultUtil;
 import com.base.vm.entity.VOrder;
 import com.base.vm.entity.dto.OrderQueryDTO;
-import com.base.vm.entity.vo.OrderPageResponse;
+import com.base.vm.entity.vo.order.OrderPageResponse;
 import com.base.vm.service.OrderService;
 import io.micrometer.common.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
