@@ -8,14 +8,10 @@ import lombok.Data;
 public class VehicleDictVO {
     @Schema(description = "车辆ID")
     private Integer id;
-    @Schema(description = "车辆编号")
-    private String vehicleNo;
     @Schema(description = "项目名称")
     private String project;
+    @Schema(description = "车辆编号")
+    private String vehicleNo;
     @Schema(description = "车辆状态")
     private Integer state;
-    @Schema(description = "车辆状态名称")
-    private String stateName;
-    @Schema(description = "车辆地点")
-    private String place;
 }

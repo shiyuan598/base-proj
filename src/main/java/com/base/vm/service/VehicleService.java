@@ -12,8 +12,8 @@ import java.util.Map;
 
 public interface VehicleService extends IService<VVehicle> {
 
-    List<VehicleListVO> getAvailableVehicles();
+    List<VehicleDictVO> getAvailableVehicles();
 
     IPage<Map<String, Object>> getVehiclePage(QueryDTO queryDto);
-    IPage<VehicleDictVO> getVehicleVOPage(QueryDTO queryDto);
+    IPage<VehicleListVO> getVehicleVOPage(QueryDTO queryDto);
 }

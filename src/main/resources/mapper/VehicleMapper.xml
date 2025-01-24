@@ -16,7 +16,7 @@
         <result property="reason" column="reason" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <resultMap id="vehicleVOResultMap" type="com.base.vm.entity.vo.VehicleListVO">
+    <resultMap id="vehicleVOResultMap" type="com.base.vm.entity.vo.VehicleDictVO">
         <!-- 这里定义VehicleDto的属性映射 -->
         <id property="id" column="id"/>
         <result property="project" column="project"/>
@@ -85,7 +85,7 @@
         </choose>
     </select>
 
-    <select id="getVehicleVOPage" resultType="com.base.vm.entity.vo.VehicleDictVO">
+    <select id="getVehicleVOPage" resultType="com.base.vm.entity.vo.VehicleListVO">
         SELECT
         v.id, v.vehicleno as vehicleNo, v.place, v.state,
         DATE_FORMAT(v.createtime, '%Y-%m-%d %H:%i:%s') as createTime,

@@ -5,6 +5,9 @@ import com.base.common.utils.ResultUtil;
 import com.base.vm.entity.VModule;
 import com.base.vm.service.ModuleService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,9 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/module")
+@ApiResponse(responseCode = "200", description = "查询成功",
+        content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = VModule.class)))
 public class ModuleController extends ResultUtil {
     @Autowired
     private ModuleService moduleService;

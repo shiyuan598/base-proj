@@ -22,7 +22,7 @@ public class VehicleServiceImpl extends ServiceImpl<VehicleMapper, VVehicle>
     @Autowired
     private VehicleMapper vehicleMapper;
 
-    public List<VehicleListVO> getAvailableVehicles() {
+    public List<VehicleDictVO> getAvailableVehicles() {
         try {
             return vehicleMapper.selectAvailableVehicles();
         } catch (Exception e) {
@@ -45,9 +45,9 @@ public class VehicleServiceImpl extends ServiceImpl<VehicleMapper, VVehicle>
     }
 
     @Override
-    public IPage<VehicleDictVO> getVehicleVOPage(QueryDTO queryDto) {
+    public IPage<VehicleListVO> getVehicleVOPage(QueryDTO queryDto) {
         try {
-            Page<VehicleDictVO> page = new Page<>(queryDto.getCurrentPage(), queryDto.getPageSize());
+            Page<VehicleListVO> page = new Page<>(queryDto.getCurrentPage(), queryDto.getPageSize());
             return vehicleMapper.getVehicleVOPage(page, queryDto);
         } catch (Exception e) {
             return new Page<>();

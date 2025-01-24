@@ -15,8 +15,8 @@ import java.util.Map;
 
 public interface VehicleMapper extends BaseMapper<VVehicle> {
     VVehicle selectVehicleDtoById(@Param("id") Integer id);
-    List<VehicleListVO> selectAvailableVehicles();
+    List<VehicleDictVO> selectAvailableVehicles();
     @MapKey("id") // 使用resultType="map"时需要设置MapKey
     IPage<Map<String, Object>> getVehiclePage(Page<?> page, @Param("query") QueryDTO queryDto);
-    IPage<VehicleDictVO> getVehicleVOPage(Page<?> page, @Param("query") QueryDTO queryDto);
+    IPage<VehicleListVO> getVehicleVOPage(Page<?> page, @Param("query") QueryDTO queryDto);
 }

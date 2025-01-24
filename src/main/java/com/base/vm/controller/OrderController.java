@@ -6,9 +6,13 @@ import com.base.common.exception.BadRequestException;
 import com.base.common.utils.ResultUtil;
 import com.base.vm.entity.VOrder;
 import com.base.vm.entity.dto.OrderQueryDTO;
+import com.base.vm.entity.vo.OrderPageResponse;
 import com.base.vm.service.OrderService;
 import io.micrometer.common.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +27,9 @@ public class OrderController extends ResultUtil {
 
     @Operation(summary = "订单分页列表")
     @GetMapping
+    @ApiResponse(responseCode = "200", description = "查询成功",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = OrderPageResponse.class)))
     public ResponseEntity<Object> getOrders(OrderQueryDTO queryDto) {
         try {
             LambdaQueryWrapper<VOrder> queryWrapper = new LambdaQueryWrapper<>();

@@ -4,9 +4,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.base.common.exception.BadRequestException;
 import com.base.common.utils.ResultUtil;
 import com.base.vm.entity.dto.QueryDTO;
+import com.base.vm.entity.vo.UserPageResponse;
 import com.base.vm.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
+@ApiResponse(responseCode = "200", description = "查询成功",
+        content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = UserPageResponse.class)))
 public class UserController extends ResultUtil {
     private final UserService userService;
 

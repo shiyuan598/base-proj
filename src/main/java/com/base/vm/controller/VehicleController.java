@@ -7,10 +7,16 @@ import com.base.vm.entity.VVehicle;
 import com.base.vm.entity.dto.AddVehicleDTO;
 import com.base.vm.entity.dto.QueryDTO;
 import com.base.vm.entity.dto.UpdateVehicleDTO;
-import com.base.vm.entity.vo.VehicleDictVO;
+import com.base.vm.entity.vo.VehicleDictListResponse;
+import com.base.vm.entity.vo.VehicleListVO;
+import com.base.vm.entity.vo.VehiclePageResponse;
 import com.base.vm.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +65,11 @@ public class VehicleController extends ResultUtil {
 
     @Operation(summary = "车辆分页列表2")
     @GetMapping("/pageVo")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "查询成功",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = VehiclePageResponse.class)))
+    })
     public ResponseEntity<Object> listVehicleVo(@Parameter(description = "模糊搜索关键字")
                                               @RequestParam(required = false) String blurry,
                                           @Parameter(description = "当前页码", example = "1")
@@ -80,7 +91,7 @@ public class VehicleController extends ResultUtil {
             queryDto.setPageSize(pageSize);
             queryDto.setSort(sort);
             queryDto.setOrder(order);
-            IPage<VehicleDictVO> result = vehicleService.getVehicleVOPage(queryDto);
+            IPage<VehicleListVO> result = vehicleService.getVehicleVOPage(queryDto);
             return success(true, result);
         } catch (BadRequestException e) {
             return fail(false, "失败");
@@ -89,6 +100,11 @@ public class VehicleController extends ResultUtil {
 
     @Operation(summary = "车辆列表(字典)")
     @GetMapping("/list/available")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "查询成功",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = VehicleDictListResponse.class)))
+    })
     public ResponseEntity<Object> allVehicles() {
         try {
             return success(true, vehicleService.getAvailableVehicles());

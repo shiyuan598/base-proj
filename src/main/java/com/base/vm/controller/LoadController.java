@@ -2,8 +2,12 @@ package com.base.vm.controller;
 
 import com.base.common.exception.BadRequestException;
 import com.base.common.utils.ResultUtil;
+import com.base.vm.entity.VLoad;
 import com.base.vm.service.LoadService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/load")
+@ApiResponse(responseCode = "200", description = "查询成功",
+        content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = VLoad.class)))
 public class LoadController extends ResultUtil {
     @Autowired
     private LoadService loadService;
