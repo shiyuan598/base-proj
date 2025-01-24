@@ -1,5 +1,6 @@
 package com.base.vm.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.base.common.exception.BadRequestException;
 import com.base.common.utils.ResultUtil;
@@ -13,6 +14,7 @@ import com.base.vm.entity.vo.VehiclePageResponse;
 import com.base.vm.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.StringToClassMapItem;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -125,6 +127,25 @@ public class VehicleController extends ResultUtil {
             vehicle.setReason(vehicleDTO.getReason());
             vehicleService.save(vehicle);
             return success(true, "成功");
+        } catch (BadRequestException e) {
+            return fail(false, "失败");
+        }
+    }
+
+    @Operation(summary = "检查车牌号是否存在")
+    @GetMapping("/check/exist")
+    @ApiResponse(responseCode = "200", description = "查询成功",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(type = "object",
+                            properties = {
+                                    @StringToClassMapItem(key = "success", value = Boolean.class),
+                                    @StringToClassMapItem(key = "data", value = Boolean.class)
+                            })))
+    public ResponseEntity<Object> checkExist(@Parameter(description = "车辆编号") @RequestParam String vehicleNo) {
+        try {
+            LambdaQueryWrapper<VVehicle> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(VVehicle::getVehicleNo, vehicleNo);
+            return success(true, vehicleService.exists(wrapper));
         } catch (BadRequestException e) {
             return fail(false, "失败");
         }
