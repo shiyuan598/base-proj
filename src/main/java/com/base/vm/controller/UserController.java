@@ -1,5 +1,6 @@
 package com.base.vm.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.base.common.exception.BadRequestException;
 import com.base.common.utils.ResultUtil;
@@ -8,6 +9,7 @@ import com.base.vm.entity.dto.AddUserDTO;
 import com.base.vm.entity.dto.QueryDTO;
 import com.base.vm.entity.vo.user.UserPageResponse;
 import com.base.vm.service.UserService;
+import com.github.xiaoymin.knife4j.core.util.StrUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -56,6 +58,22 @@ public class UserController extends ResultUtil {
             queryDto.setOrder(order);
             return success(true, userService.page(new Page<>(queryDto.getCurrentPage(), queryDto.getPageSize())));
         } catch (BadRequestException e) {
+            return fail(false, "失败");
+        }
+    }
+
+    @Operation(summary = "查询司机")
+    @GetMapping("/driver")
+    public ResponseEntity<Object> getDriver(@Parameter(description = "姓名")
+                                                @RequestParam(required = false) String name) {
+        try{
+            LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
+            if (StrUtil.isNotBlank(name)) {
+                wrapper.like(VUser::getName, name);
+            }
+            wrapper.eq(VUser::getRole, 2);
+            return success(true, userService.list(wrapper));
+        } catch (RuntimeException e) {
             return fail(false, "失败");
         }
     }

@@ -100,7 +100,22 @@ public class VehicleController extends ResultUtil {
         }
     }
 
-    @Operation(summary = "车辆列表(字典)")
+    @Operation(summary = "车辆总数")
+    @GetMapping("/count")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "查询成功",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Integer.class)))
+    })
+    public ResponseEntity<Object> countVehicle() {
+        try {
+            return success(true, vehicleService.count());
+        } catch (BadRequestException e) {
+            return fail(false, "失败");
+        }
+    }
+
+    @Operation(summary = "可用车辆列表(字典)")
     @GetMapping("/list/available")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "查询成功",
