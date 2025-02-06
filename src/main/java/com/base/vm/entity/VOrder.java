@@ -21,13 +21,13 @@ public class VOrder implements Serializable {
 
     private String subscriber;
 
-    private String subscribenote;
+    private String subscribeNote;
 
     private String module;
 
-    private Integer vehicleid;
+    private Integer vehicleId;
 
-    private String vehicleno;
+    private String vehicleNo;
 
     private String project;
 
@@ -60,7 +60,7 @@ public class VOrder implements Serializable {
 
     private String comment;
 
-    private Integer inclinationdriver;
+    private Integer inclinationDriver;
 
     private static final long serialVersionUID = 1L;
 }

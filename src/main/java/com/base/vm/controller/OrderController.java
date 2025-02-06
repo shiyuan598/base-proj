@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.base.common.exception.BadRequestException;
 import com.base.common.utils.ResultUtil;
 import com.base.vm.entity.VOrder;
-import com.base.vm.entity.dto.OrderQueryDTO;
 import com.base.vm.entity.vo.order.OrderPageResponse;
 import com.base.vm.service.OrderService;
 import io.micrometer.common.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,23 +30,39 @@ public class OrderController extends ResultUtil {
     @ApiResponse(responseCode = "200", description = "查询成功",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = OrderPageResponse.class)))
-    public ResponseEntity<Object> getOrders(OrderQueryDTO queryDto) {
+    public ResponseEntity<Object> getOrders(@Parameter(description = "模糊搜索关键字")
+                                                @RequestParam(required = false) String blurry,
+
+                                            @Parameter(description = "当前页码", example = "1")
+                                                @RequestParam(defaultValue = "1") long currentPage,
+
+                                            @Parameter(description = "每页条数", example = "10")
+                                                @RequestParam(defaultValue = "10") long pageSize,
+
+                                            @Parameter(description = "排序字段")
+                                                @RequestParam(required = false) String sort,
+
+                                            @Parameter(description = "排序方向 (asc/desc)")
+                                                @RequestParam(required = false) String order,
+
+                                            @Parameter(description = "预订人")
+                                                @RequestParam(required = false) String subscriber) {
         try {
             LambdaQueryWrapper<VOrder> queryWrapper = new LambdaQueryWrapper<>();
-            if (StringUtils.isNotBlank(queryDto.getBlurry())) {
-                queryWrapper.like(VOrder::getVehicleno, queryDto.getBlurry())
+            if (StringUtils.isNotBlank(blurry)) {
+                queryWrapper.like(VOrder::getVehicleNo, blurry)
                         .or()
-                        .like(VOrder::getModule, queryDto.getBlurry())
+                        .like(VOrder::getModule, blurry)
                         .or()
-                        .like(VOrder::getSubscriber, queryDto.getBlurry());
+                        .like(VOrder::getSubscriber, blurry);
             }
             // 处理排序
-            if (StringUtils.isNotBlank(queryDto.getSort())) {
-                boolean isAsc = StringUtils.isBlank(queryDto.getOrder()) ||
-                        "asc".equalsIgnoreCase(queryDto.getOrder());
+            if (StringUtils.isNotBlank(sort)) {
+                boolean isAsc = StringUtils.isBlank(order) ||
+                        "asc".equalsIgnoreCase(order);
 
                 // 根据不同字段排序
-                switch (queryDto.getSort().toLowerCase()) {
+                switch (sort.toLowerCase()) {
                     case "project":
                         queryWrapper.orderBy(true, isAsc, VOrder::getProject);
                         break;
@@ -54,7 +70,7 @@ public class OrderController extends ResultUtil {
                         queryWrapper.orderBy(true, isAsc, VOrder::getModule);
                         break;
                     case "vehicleno":
-                        queryWrapper.orderBy(true, isAsc, VOrder::getVehicleno);
+                        queryWrapper.orderBy(true, isAsc, VOrder::getVehicleNo);
                         break;
                     case "starttime":
                         queryWrapper.orderBy(true, isAsc, VOrder::getStarttime);
@@ -63,7 +79,7 @@ public class OrderController extends ResultUtil {
                         queryWrapper.orderBy(true, isAsc, VOrder::getState);
                         break;
                     default:
-                        // 默认按创建时间降序
+                        // 默认按id降序
                         queryWrapper.orderByDesc(VOrder::getId);
                 }
             } else {
@@ -72,11 +88,11 @@ public class OrderController extends ResultUtil {
             }
 
             // 特定用户的订单
-            if (queryDto.getSubscriber() != null) {
-                queryWrapper.eq(VOrder::getSubscriber, queryDto.getSubscriber());
+            if (subscriber != null) {
+                queryWrapper.eq(VOrder::getSubscriber, subscriber);
             }
 
-            return success(true, orderService.page(new Page<>(queryDto.getCurrentPage(), queryDto.getPageSize()), queryWrapper));
+            return success(true, orderService.page(new Page<>(currentPage, pageSize), queryWrapper));
         } catch (BadRequestException e) {
             return fail(false, "失败");
         }
@@ -84,6 +100,9 @@ public class OrderController extends ResultUtil {
 
     @Operation(summary = "订单详情")
     @GetMapping("/{id}")
+    @ApiResponse(responseCode = "200", description = "查询成功",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = VOrder.class)))
     public ResponseEntity<Object> getOrder(@PathVariable Long id) {
         try {
             return success(true, orderService.getById(id));

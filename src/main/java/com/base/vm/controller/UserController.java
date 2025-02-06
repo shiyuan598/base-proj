@@ -6,10 +6,10 @@ import com.base.common.exception.BadRequestException;
 import com.base.common.utils.ResultUtil;
 import com.base.vm.entity.VUser;
 import com.base.vm.entity.dto.AddUserDTO;
-import com.base.vm.entity.dto.QueryDTO;
 import com.base.vm.entity.vo.user.UserPageResponse;
 import com.base.vm.service.UserService;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
+import io.micrometer.common.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,32 +31,45 @@ public class UserController extends ResultUtil {
 
     @Operation(summary = "用户分页列表")
     @GetMapping
-    @ApiResponse(responseCode = "200", description = "查询成功",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = UserPageResponse.class)))
-    public ResponseEntity<Object> listUsers(@Parameter(description = "模糊搜索关键字")
-                                            @RequestParam(required = false) String blurry,
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserPageResponse.class)))
+    public ResponseEntity<Object> listUsers(@Parameter(description = "模糊搜索关键字") @RequestParam(required = false) String blurry,
 
-                                            @Parameter(description = "当前页码", example = "1")
-                                            @RequestParam(defaultValue = "1") long currentPage,
+                                            @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") long currentPage,
 
-                                            @Parameter(description = "每页条数", example = "10")
-                                            @RequestParam(defaultValue = "10") long pageSize,
+                                            @Parameter(description = "每页条数", example = "10") @RequestParam(defaultValue = "10") long pageSize,
 
-                                            @Parameter(description = "排序字段")
-                                            @RequestParam(required = false) String sort,
+                                            @Parameter(description = "排序字段") @RequestParam(required = false) String sort,
 
-                                            @Parameter(description = "排序方向 (asc/desc)")
-                                            @RequestParam(required = false) String order
-    ) {
+                                            @Parameter(description = "排序方向 (asc/desc)") @RequestParam(required = false) String order) {
         try {
-            QueryDTO queryDto = new QueryDTO();
-            queryDto.setBlurry(blurry);
-            queryDto.setCurrentPage(currentPage);
-            queryDto.setPageSize(pageSize);
-            queryDto.setSort(sort);
-            queryDto.setOrder(order);
-            return success(true, userService.page(new Page<>(queryDto.getCurrentPage(), queryDto.getPageSize())));
+            LambdaQueryWrapper<VUser> queryWrapper = new LambdaQueryWrapper<>();
+            if (StrUtil.isNotBlank(blurry)) {
+                queryWrapper.like(VUser::getName, blurry).or().like(VUser::getUsername, blurry);
+            }
+
+            // 处理排序
+            if (StringUtils.isNotBlank(sort)) {
+                boolean isAsc = StringUtils.isBlank(order) || "asc".equalsIgnoreCase(order);
+                // 根据不同字段排序
+                switch (sort.toLowerCase()) {
+                    case "username":
+                        queryWrapper.orderBy(true, isAsc, VUser::getUsername);
+                        break;
+                    case "role":
+                        queryWrapper.orderBy(true, isAsc, VUser::getRole);
+                        break;
+                    case "name":
+                        queryWrapper.orderBy(true, isAsc, VUser::getName);
+                        break;
+                    default:
+                        // 默认按id降序
+                        queryWrapper.orderByDesc(VUser::getId);
+                }
+            } else {
+                // 默认按id降序
+                queryWrapper.orderByDesc(VUser::getId);
+            }
+            return success(true, userService.page(new Page<>(currentPage, pageSize), queryWrapper));
         } catch (BadRequestException e) {
             return fail(false, "失败");
         }
@@ -64,8 +77,7 @@ public class UserController extends ResultUtil {
 
     @Operation(summary = "查询司机")
     @GetMapping("/driver")
-    public ResponseEntity<Object> getDriver(@Parameter(description = "姓名")
-                                            @RequestParam(required = false) String name) {
+    public ResponseEntity<Object> getDriver(@Parameter(description = "姓名") @RequestParam(required = false) String name) {
         try {
             LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
             if (StrUtil.isNotBlank(name)) {
