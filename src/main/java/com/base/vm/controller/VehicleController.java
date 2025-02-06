@@ -37,19 +37,19 @@ public class VehicleController extends ResultUtil {
     @Operation(summary = "车辆分页列表")
     @GetMapping()
     public ResponseEntity<Object> listVehicle(@Parameter(description = "模糊搜索关键字")
-                                                  @RequestParam(required = false) String blurry,
+                                              @RequestParam(required = false) String blurry,
 
                                               @Parameter(description = "当前页码", example = "1")
-                                                  @RequestParam(defaultValue = "1") long currentPage,
+                                              @RequestParam(defaultValue = "1") long currentPage,
 
                                               @Parameter(description = "每页条数", example = "10")
-                                                  @RequestParam(defaultValue = "10") long pageSize,
+                                              @RequestParam(defaultValue = "10") long pageSize,
 
                                               @Parameter(description = "排序字段")
-                                                  @RequestParam(required = false) String sort,
+                                              @RequestParam(required = false) String sort,
 
                                               @Parameter(description = "排序方向 (asc/desc)")
-                                                  @RequestParam(required = false) String order
+                                              @RequestParam(required = false) String order
     ) {
         try {
             QueryDTO queryDto = new QueryDTO();
@@ -73,18 +73,18 @@ public class VehicleController extends ResultUtil {
                             schema = @Schema(implementation = VehiclePageResponse.class)))
     })
     public ResponseEntity<Object> listVehicleVo(@Parameter(description = "模糊搜索关键字")
-                                              @RequestParam(required = false) String blurry,
-                                          @Parameter(description = "当前页码", example = "1")
-                                              @RequestParam(defaultValue = "1") long currentPage,
+                                                @RequestParam(required = false) String blurry,
+                                                @Parameter(description = "当前页码", example = "1")
+                                                @RequestParam(defaultValue = "1") long currentPage,
 
-                                          @Parameter(description = "每页条数", example = "10")
-                                              @RequestParam(defaultValue = "10") long pageSize,
+                                                @Parameter(description = "每页条数", example = "10")
+                                                @RequestParam(defaultValue = "10") long pageSize,
 
-                                          @Parameter(description = "排序字段")
-                                              @RequestParam(required = false) String sort,
+                                                @Parameter(description = "排序字段")
+                                                @RequestParam(required = false) String sort,
 
-                                          @Parameter(description = "排序方向 (asc/desc)")
-                                              @RequestParam(required = false) String order
+                                                @Parameter(description = "排序方向 (asc/desc)")
+                                                @RequestParam(required = false) String order
     ) {
         try {
             QueryDTO queryDto = new QueryDTO();
@@ -168,7 +168,7 @@ public class VehicleController extends ResultUtil {
 
     @Operation(summary = "更新车辆")
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateVehicle(@Parameter(description = "车辆ID") @PathVariable(value = "id") Integer id,  @Parameter(description = "车辆信息") @RequestBody UpdateVehicleDTO vehicleDTO) {
+    public ResponseEntity<Object> updateVehicle(@Parameter(description = "车辆ID") @PathVariable(value = "id") Integer id, @Parameter(description = "车辆信息") @RequestBody UpdateVehicleDTO vehicleDTO) {
         try {
             VVehicle vehicle = vehicleService.getById(id);
             Optional.ofNullable(vehicleDTO.getVehicleNo()).ifPresent(vehicle::setVehicleNo);

@@ -65,8 +65,8 @@ public class UserController extends ResultUtil {
     @Operation(summary = "查询司机")
     @GetMapping("/driver")
     public ResponseEntity<Object> getDriver(@Parameter(description = "姓名")
-                                                @RequestParam(required = false) String name) {
-        try{
+                                            @RequestParam(required = false) String name) {
+        try {
             LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
             if (StrUtil.isNotBlank(name)) {
                 wrapper.like(VUser::getName, name);
@@ -88,6 +88,13 @@ public class UserController extends ResultUtil {
             user.setName(userDto.getName());
             user.setTelephone(userDto.getTelephone());
             user.setRole(userDto.getRole());
+
+            LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(VUser::getUsername, user.getUsername());
+            long count = userService.count(wrapper);
+            if (count > 0) {
+                throw new RuntimeException("用户名已存在");
+            }
             userService.save(user);
             return success(true, "成功");
         } catch (BadRequestException e) {
@@ -113,12 +120,10 @@ public class UserController extends ResultUtil {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteUser(@Parameter(description = "用户Id") @PathVariable Integer id) {
         try {
-        userService.removeById(id);
-        return success(true, "成功");
-    } catch (BadRequestException e) {
-        return fail(false, "失败");
+            userService.removeById(id);
+            return success(true, "成功");
+        } catch (BadRequestException e) {
+            return fail(false, "失败");
+        }
     }
-    }
-
-
 }
