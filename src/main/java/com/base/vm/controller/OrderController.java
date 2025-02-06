@@ -1,13 +1,13 @@
 package com.base.vm.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.base.common.exception.BadRequestException;
 import com.base.common.utils.ResultUtil;
 import com.base.vm.entity.VOrder;
+import com.base.vm.entity.dto.OrderQueryDTO;
+import com.base.vm.entity.vo.order.OrderListVO;
 import com.base.vm.entity.vo.order.OrderPageResponse;
 import com.base.vm.service.OrderService;
-import io.micrometer.common.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -48,51 +48,16 @@ public class OrderController extends ResultUtil {
                                             @Parameter(description = "预订人")
                                                 @RequestParam(required = false) String subscriber) {
         try {
-            LambdaQueryWrapper<VOrder> queryWrapper = new LambdaQueryWrapper<>();
-            if (StringUtils.isNotBlank(blurry)) {
-                queryWrapper.like(VOrder::getVehicleNo, blurry)
-                        .or()
-                        .like(VOrder::getModule, blurry)
-                        .or()
-                        .like(VOrder::getSubscriber, blurry);
-            }
-            // 处理排序
-            if (StringUtils.isNotBlank(sort)) {
-                boolean isAsc = StringUtils.isBlank(order) ||
-                        "asc".equalsIgnoreCase(order);
+            OrderQueryDTO queryDto = new OrderQueryDTO();
+            queryDto.setBlurry(blurry);
+            queryDto.setCurrentPage(currentPage);
+            queryDto.setPageSize(pageSize);
+            queryDto.setSort(sort);
+            queryDto.setOrder(order);
+            queryDto.setSubscriber(subscriber);
 
-                // 根据不同字段排序
-                switch (sort.toLowerCase()) {
-                    case "project":
-                        queryWrapper.orderBy(true, isAsc, VOrder::getProject);
-                        break;
-                    case "module":
-                        queryWrapper.orderBy(true, isAsc, VOrder::getModule);
-                        break;
-                    case "vehicleno":
-                        queryWrapper.orderBy(true, isAsc, VOrder::getVehicleNo);
-                        break;
-                    case "starttime":
-                        queryWrapper.orderBy(true, isAsc, VOrder::getStarttime);
-                        break;
-                    case "state":
-                        queryWrapper.orderBy(true, isAsc, VOrder::getState);
-                        break;
-                    default:
-                        // 默认按id降序
-                        queryWrapper.orderByDesc(VOrder::getId);
-                }
-            } else {
-                // 默认按id降序
-                queryWrapper.orderByDesc(VOrder::getId);
-            }
-
-            // 特定用户的订单
-            if (subscriber != null) {
-                queryWrapper.eq(VOrder::getSubscriber, subscriber);
-            }
-
-            return success(true, orderService.page(new Page<>(currentPage, pageSize), queryWrapper));
+            IPage<OrderListVO> result = orderService.getOrderPage(queryDto);
+            return success(true, result);
         } catch (BadRequestException e) {
             return fail(false, "失败");
         }

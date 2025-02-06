@@ -38,6 +38,10 @@ public class OrderListVO {
     private String vehicleId;
     @Schema(description = "车辆编号")
     private String vehicleNo;
+    @Schema(description = "车辆带挂")
+    private String load;
+    @Schema(description = "车辆带挂名称")
+    private String loadName;
     @Schema(description = "用车地点")
     private String address;
     @Schema(description = "用车目的")
@@ -47,7 +51,7 @@ public class OrderListVO {
     @Schema(description = "备注")
     private String subscribeNote;
     @Schema(description = "意向司机")
-    private Integer inclinationDriverId;
+    private Integer inclinationDriver;
     @Schema(description = "意向司机姓名")
     private Integer inclinationDriverName;
 

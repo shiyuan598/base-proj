@@ -104,7 +104,7 @@
         <choose>
             <when test="query.sort != null and query.sort != ''">
                 <choose>
-                    <when test="query.sort == 'vehicleno'">
+                    <when test="query.sort == 'vehicleNo'">
                         ORDER BY v.vehicleno ${query.order == 'desc' ? 'DESC' : 'ASC'}
                     </when>
                     <when test="query.sort == 'project'">

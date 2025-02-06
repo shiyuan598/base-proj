@@ -7,10 +7,10 @@
     <resultMap id="BaseResultMap" type="com.base.vm.entity.VOrder">
         <id property="id" column="id" jdbcType="INTEGER"/>
         <result property="subscriber" column="subscriber" jdbcType="VARCHAR"/>
-        <result property="subscribenote" column="subscribeNote" jdbcType="VARCHAR"/>
+        <result property="subscribeNote" column="subscribeNote" jdbcType="VARCHAR"/>
         <result property="module" column="module" jdbcType="VARCHAR"/>
-        <result property="vehicleid" column="vehicleId" jdbcType="INTEGER"/>
-        <result property="vehicleno" column="vehicleNo" jdbcType="VARCHAR"/>
+        <result property="vehicleId" column="vehicleId" jdbcType="INTEGER"/>
+        <result property="vehicleNo" column="vehicleNo" jdbcType="VARCHAR"/>
         <result property="project" column="project" jdbcType="VARCHAR"/>
         <result property="starttime" column="starttime" jdbcType="TIMESTAMP"/>
         <result property="endtime" column="endtime" jdbcType="TIMESTAMP"/>
@@ -24,7 +24,7 @@
         <result property="driver" column="driver" jdbcType="VARCHAR"/>
         <result property="state" column="state" jdbcType="INTEGER"/>
         <result property="comment" column="comment" jdbcType="VARCHAR"/>
-        <result property="inclinationdriver" column="inclinationDriver" jdbcType="INTEGER"/>
+        <result property="inclinationDriver" column="inclinationDriver" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -36,4 +36,50 @@
         approver,driver,state,
         comment,inclinationDriver
     </sql>
+    <select id="getOrderPage" resultType="com.base.vm.entity.vo.order.OrderListVO">
+        SELECT
+        o.id, o.subscriber, us.name as subscriberName, us.telephone as subscriberPhone,
+        o.module, m.name as moduleName,
+        p.name as project, o.project, p.name as projectName,
+        DATE_FORMAT(o.starttime, '%Y-%m-%d %H:%i:%s') as startTime,
+        DATE_FORMAT(o.endtime, '%Y-%m-%d %H:%i:%s') as endTime,
+        TIMESTAMPDIFF(SECOND, o.starttime, o.endtime) / 3600.0 as duration,
+        o.vehicleId, o.vehicleNo, o.`load`, l.name as loadName, o.address, o.purpose, o.route, o.subscribeNote,
+        o.inclinationDriver, ui.name as inclinationDriverName,
+        o.approver, ua.name as approverName, o.comment,
+        o.driver, ud.name as driverName, ud.telephone as driverPhone,
+        o.state, s.name as stateName,
+        DATE_FORMAT(o.updatetime, '%Y-%m-%d %H:%i:%s') as updateTime
+        FROM v_order o
+        LEFT JOIN v_project p ON o.project = p.id
+        LEFT JOIN v_module m ON o.module = m.id
+        LEFT JOIN v_load l ON o.`load` = l.id
+        LEFT JOIN v_user us on o.subscriber = us.id
+        LEFT JOIN v_user ua on o.approver = ua.id
+        LEFT JOIN v_user ui on o.inclinationDriver = ui.id
+        LEFT JOIN v_user ud on o.driver = ud.id
+        LEFT JOIN v_order_state s on o.state = s.id
+        <where>
+            <if test="query.blurry != null and query.blurry != ''">
+                o.vehicleno LIKE CONCAT('%', #{query.blurry}, '%')
+                OR l.name LIKE CONCAT('%', #{query.blurry}, '%')
+                OR p.name LIKE CONCAT('%', #{query.blurry}, '%')
+                OR m.name LIKE CONCAT('%', #{query.blurry}, '%')
+                OR o.starttime LIKE CONCAT('%', #{query.blurry}, '%')
+                OR o.endtime LIKE CONCAT('%', #{query.blurry}, '%')
+                OR o.address LIKE CONCAT('%', #{query.blurry}, '%')
+                OR us.name LIKE CONCAT('%', #{query.blurry}, '%')
+                OR ud.name LIKE CONCAT('%', #{query.blurry}, '%')
+            </if>
+        </where>
+        <choose>
+            <when test="query.sort != null and query.sort != ''">
+                ORDER BY o.${query.sort} ${query.order}
+            </when>
+            <otherwise>
+                ORDER BY o.id DESC
+            </otherwise>
+        </choose>
+    </select>
+
 </mapper>
