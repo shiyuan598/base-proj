@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.base.vm.entity.VOrder;
 import com.base.vm.entity.dto.QueryDTO;
 import com.base.vm.entity.vo.order.OrderListVO;
-import com.base.vm.entity.vo.vehicle.VehicleListVO;
 import org.apache.ibatis.annotations.Param;
 
 public interface OrderMapper extends BaseMapper<VOrder> {

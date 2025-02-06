@@ -21,21 +21,26 @@ public class VOrder implements Serializable {
 
     private String subscriber;
 
+    @TableField("subscribeNote")
     private String subscribeNote;
 
     private String module;
 
+    @TableField("vehicleId")
     private Integer vehicleId;
 
+    @TableField("vehicleNo")
     private String vehicleNo;
 
     private String project;
 
+    @TableField("starttime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date starttime;
+    private Date startTime;
 
+    @TableField("endtime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date endtime;
+    private Date endTime;
 
     private String address;
 
@@ -46,11 +51,13 @@ public class VOrder implements Serializable {
     @TableField("`load`")
     private String load;
 
+    @TableField("updatetime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+0")
-    private Date updatetime;
+    private Date updateTime;
 
+    @TableField("createtime")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+0")
-    private Date createtime;
+    private Date createTime;
 
     private String approver;
 
@@ -60,6 +67,7 @@ public class VOrder implements Serializable {
 
     private String comment;
 
+    @TableField("inclinationDriver")
     private Integer inclinationDriver;
 
     private static final long serialVersionUID = 1L;

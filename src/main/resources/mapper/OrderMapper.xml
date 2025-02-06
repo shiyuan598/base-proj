@@ -28,7 +28,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,subscriber,subscribeNote,
+        id,subscriber,subscribenote,
         module,vehicleId,vehicleNo,
         project,starttime,endtime,
         address,purpose,route,
