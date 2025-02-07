@@ -40,41 +40,62 @@
         SELECT
         o.id,
         o.subscriber,
-        '未知' as subscriberName,
-        '未知' as subscriberPhone,
+        IFNULL(us.name, '未知') as subscriberName,
+        IFNULL(us.telephone, '未知') as subscriberPhone,
         o.module,
-        '未知' as moduleName,
-        '未知' as project,
+        IFNULL(m.name, '未知') as moduleName,
+        IFNULL(p.name, '未知') as project,
         o.project,
-        '未知' as projectName,
+        IFNULL(p.name, '未知') as projectName,
         DATE_FORMAT(o.starttime, '%Y-%m-%d %H:%i:%s') as startTime,
         DATE_FORMAT(o.endtime, '%Y-%m-%d %H:%i:%s') as endTime,
-        TIMESTAMPDIFF(SECOND, o.starttime, o.endtime) / 3600.0 as duration,
+        ROUND(TIMESTAMPDIFF(SECOND, o.starttime, o.endtime) / 3600.0, 2) as duration,
         o.vehicleId,
         o.vehicleNo,
         o.`load`,
-        '未知' as loadName,
+        IFNULL(l.name, '未知') as loadName,
         o.address,
         o.purpose,
         o.route,
         o.subscribeNote,
         o.inclinationDriver,
-        '未知' as inclinationDriverName,
+        IFNULL(ui.name, '未知') as inclinationDriverName,
         o.approver,
-        '未知' as approverName,
+        IFNULL(ua.name, '未知') as approverName,
         o.comment,
         o.driver,
-        '未知' as driverName,
-        '未知' as driverPhone,
+        IFNULL(ud.name, '未知') as driverName,
+        IFNULL(ud.telephone, '未知') as driverPhone,
         o.state,
-        '未知' as stateName,
+        IFNULL(s.name, '未知') as stateName,
         DATE_FORMAT(o.updatetime, '%Y-%m-%d %H:%i:%s') as updateTime
-        FROM v_order o
+        FROM
+        v_order o
+        LEFT JOIN
+        v_project p ON o.project = p.id
+        LEFT JOIN
+        v_module m ON o.module = m.id
+        LEFT JOIN
+        v_load l ON o.`load` = l.id
+        LEFT JOIN
+        v_user us ON o.subscriber = us.id
+        LEFT JOIN
+        v_user ua ON o.approver = ua.id
+        LEFT JOIN
+        v_user ui ON o.inclinationDriver = ui.id
+        LEFT JOIN
+        v_user ud ON o.driver = ud.id
+        LEFT JOIN
+        v_order_state s ON o.state = s.id
         <where>
             <if test="query.blurry != null and query.blurry != ''">
                 o.vehicleno LIKE CONCAT('%', #{query.blurry}, '%')
+                OR IFNULL(l.name, '') LIKE CONCAT('%', #{query.blurry}, '%')
+                OR IFNULL(p.name, '') LIKE CONCAT('%', #{query.blurry}, '%')
+                OR IFNULL(m.name, '') LIKE CONCAT('%', #{query.blurry}, '%')
                 OR o.address LIKE CONCAT('%', #{query.blurry}, '%')
-                -- 这里去掉了关联表字段的模糊查询，因为现在没有关联表了
+                OR IFNULL(us.name, '') LIKE CONCAT('%', #{query.blurry}, '%')
+                OR IFNULL(ud.name, '') LIKE CONCAT('%', #{query.blurry}, '%')
             </if>
         </where>
         <choose>
