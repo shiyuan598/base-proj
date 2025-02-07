@@ -8,8 +8,8 @@ spring:
     name: base-proj
 
   datasource:
-    url: jdbc:mysql://localhost:3306/ems-admin
-#    url: jdbc:mysql://172.16.18.123:3306/ems-admin?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    # url: jdbc:mysql://localhost:3306/ems-admin
+    url: jdbc:mysql://172.16.18.123:3306/ems-admin?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -27,12 +27,12 @@ spring:
   thymeleaf:
     cache: false
 
-  #mybatis-plus
-  mybatis-plus:
-    mapper-locations: classpath:mapper/**/*.xml
-    configuration:
-      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-      map-underscore-to-camel-case: true
+#mybatis-plus
+mybatis-plus:
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
 
 # knife4j的增强配置
 knife4j:
@@ -50,6 +50,6 @@ springdoc:
   api-docs:
     path: /v3/api-docs
   group-configs:
-    - group: 'default'
-      paths-to-match: '/**'
-      packages-to-scan: com.base
+    group: 'default'
+    paths-to-match: '/**'
+    packages-to-scan: com.base
