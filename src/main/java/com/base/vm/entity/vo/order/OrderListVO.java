@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
 @Schema(description = "订单列表")
 public class OrderListVO {
@@ -28,10 +26,10 @@ public class OrderListVO {
     private String projectName;
     @Schema(description = "开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date startTime;
+    private String startTime;
     @Schema(description = "结束时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date endTime;
+    private String endTime;
     @Schema(description = "使用时长")
     private String duration;
     @Schema(description = "车辆Id")
@@ -53,7 +51,7 @@ public class OrderListVO {
     @Schema(description = "意向司机")
     private Integer inclinationDriver;
     @Schema(description = "意向司机姓名")
-    private Integer inclinationDriverName;
+    private String inclinationDriverName;
 
     @Schema(description = "审批人")
     private String approver;
@@ -71,9 +69,8 @@ public class OrderListVO {
     @Schema(description = "订单状态")
     private Integer state;
     @Schema(description = "订单状态名称")
-    private Integer stateName;
+    private String stateName;
     @Schema(description = "更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updateTime;
+    private String updateTime;
 }
-
