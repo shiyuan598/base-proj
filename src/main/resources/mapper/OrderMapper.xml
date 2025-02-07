@@ -12,14 +12,14 @@
         <result property="vehicleId" column="vehicleId" jdbcType="INTEGER"/>
         <result property="vehicleNo" column="vehicleNo" jdbcType="VARCHAR"/>
         <result property="project" column="project" jdbcType="VARCHAR"/>
-        <result property="starttime" column="starttime" jdbcType="TIMESTAMP"/>
-        <result property="endtime" column="endtime" jdbcType="TIMESTAMP"/>
+        <result property="startTime" column="starttime" jdbcType="TIMESTAMP"/>
+        <result property="endTime" column="endtime" jdbcType="TIMESTAMP"/>
         <result property="address" column="address" jdbcType="VARCHAR"/>
         <result property="purpose" column="purpose" jdbcType="VARCHAR"/>
         <result property="route" column="route" jdbcType="VARCHAR"/>
         <result property="load" column="`load`" jdbcType="VARCHAR"/>
-        <result property="updatetime" column="updatetime" jdbcType="TIMESTAMP"/>
-        <result property="createtime" column="createtime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updatetime" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="createtime" jdbcType="TIMESTAMP"/>
         <result property="approver" column="approver" jdbcType="VARCHAR"/>
         <result property="driver" column="driver" jdbcType="VARCHAR"/>
         <result property="state" column="state" jdbcType="INTEGER"/>
