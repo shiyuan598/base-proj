@@ -40,34 +40,34 @@
         SELECT
         o.id,
         o.subscriber,
-        IFNULL(us.name, '未知') as subscriberName,
-        IFNULL(us.telephone, '未知') as subscriberPhone,
+        IFNULL(us.name, '') as subscriberName,
+        IFNULL(us.telephone, '') as subscriberPhone,
         o.module,
-        IFNULL(m.name, '未知') as moduleName,
-        IFNULL(p.name, '未知') as project,
+        IFNULL(m.name, '') as moduleName,
+        IFNULL(p.name, '') as project,
         o.project,
-        IFNULL(p.name, '未知') as projectName,
+        IFNULL(p.name, '') as projectName,
         DATE_FORMAT(o.starttime, '%Y-%m-%d %H:%i:%s') as startTime,
         DATE_FORMAT(o.endtime, '%Y-%m-%d %H:%i:%s') as endTime,
         ROUND(TIMESTAMPDIFF(SECOND, o.starttime, o.endtime) / 3600.0, 2) as duration,
         o.vehicleId,
         o.vehicleNo,
         o.`load`,
-        IFNULL(l.name, '未知') as loadName,
+        IFNULL(l.name, '') as loadName,
         o.address,
         o.purpose,
         o.route,
         o.subscribeNote,
         o.inclinationDriver,
-        IFNULL(ui.name, '未知') as inclinationDriverName,
+        IFNULL(ui.name, '') as inclinationDriverName,
         o.approver,
-        IFNULL(ua.name, '未知') as approverName,
+        IFNULL(ua.name, '') as approverName,
         o.comment,
         o.driver,
-        IFNULL(ud.name, '未知') as driverName,
-        IFNULL(ud.telephone, '未知') as driverPhone,
+        IFNULL(ud.name, '') as driverName,
+        IFNULL(ud.telephone, '') as driverPhone,
         o.state,
-        IFNULL(s.name, '未知') as stateName,
+        IFNULL(s.name, '') as stateName,
         DATE_FORMAT(o.updatetime, '%Y-%m-%d %H:%i:%s') as updateTime
         FROM
         v_order o
@@ -96,6 +96,12 @@
                 OR o.address LIKE CONCAT('%', #{query.blurry}, '%')
                 OR IFNULL(us.name, '') LIKE CONCAT('%', #{query.blurry}, '%')
                 OR IFNULL(ud.name, '') LIKE CONCAT('%', #{query.blurry}, '%')
+            </if>
+            <if test="query.subscriber != null and query.subscriber != ''">
+                <if test="query.blurry != null and query.blurry != ''">
+                    AND
+                </if>
+                o.subscriber = #{query.subscriber}
             </if>
         </where>
         <choose>
