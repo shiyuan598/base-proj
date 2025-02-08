@@ -16,8 +16,6 @@ public class VOrderState implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private Integer state;
-
     private String name;
 
     private static final long serialVersionUID = 1L;
