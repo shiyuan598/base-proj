@@ -22,14 +22,12 @@ public class VUser implements Serializable {
 
     private String username;
 
-    @JsonIgnore
     private String password;
 
     private String telephone;
 
     private Integer role;
 
-    @JsonIgnore
     private String token;
 
     private static final long serialVersionUID = 1L;

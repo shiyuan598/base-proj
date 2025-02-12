@@ -19,4 +19,7 @@
         password,telephone,role,
         token
     </sql>
+    <select id="findByUsername" resultType="com.base.vm.entity.VUser">
+        select id, name, username, '' as password, role, token from v_user where username=#{query.username}
+    </select>
 </mapper>

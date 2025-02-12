@@ -7,10 +7,9 @@
     <resultMap id="BaseResultMap" type="com.base.vm.entity.VOrderState">
         <id property="id" column="id" jdbcType="INTEGER"/>
         <result property="name" column="name" jdbcType="VARCHAR"/>
-        <result property="state" column="pid" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,state
+        id,name
     </sql>
 </mapper>
