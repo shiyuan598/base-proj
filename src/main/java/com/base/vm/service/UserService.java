@@ -6,4 +6,5 @@ import com.base.vm.entity.VUser;
 public interface UserService extends IService<VUser> {
     VUser findByUsername(String username);
     VUser registerUser(VUser user);
+    boolean forgetPassword(String username, String telephone, String newPassword);
 }

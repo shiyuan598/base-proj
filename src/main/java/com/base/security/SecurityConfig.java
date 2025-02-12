@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         // 放行登录接口
-                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register", "/auth/forgetPassword").permitAll()
                         // 放行 Knife4j 和 Swagger 文档相关路径
                         .requestMatchers(
                                 "/doc.html",                 // Knife4j 文档页面

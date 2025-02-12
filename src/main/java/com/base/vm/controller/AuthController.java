@@ -74,4 +74,22 @@ public class AuthController extends ResultUtil {
             return fail(false, "Registration failed");
         }
     }
+
+    @Operation(summary = "忘记密码")
+    @PostMapping("/forgetPassword")
+    public ResponseEntity<Object> forgetPassword(
+            @Parameter(description = "用户名") @RequestParam String username,
+            @Parameter(description = "手机号") @RequestParam String telephone,
+            @Parameter(description = "新密码") @RequestParam String newPassword) {
+        try {
+            boolean result = userService.forgetPassword(username, telephone, newPassword);
+            if (result) {
+                return success(true, "密码修改成功");
+            } else {
+                return success(true, "用户名或手机号不正确，密码修改失败");
+            }
+        } catch (Exception e) {
+            return fail(false, "密码修改过程中出现错误");
+        }
+    }
 }
