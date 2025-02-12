@@ -98,6 +98,7 @@ public class UserController extends ResultUtil {
 
     @Operation(summary = "添加用户")
     @PostMapping
+    @SecurityRequirement(name = "Authorization")
     public ResponseEntity<Object> addUser(@Parameter(description = "用户") @RequestBody AddUserDTO userDto) {
         try {
             VUser user = new VUser();
@@ -122,6 +123,7 @@ public class UserController extends ResultUtil {
 
     @Operation(summary = "更新用户")
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Authorization")
     public ResponseEntity<Object> updateUser(@Parameter(description = "用户Id") @PathVariable Integer id, @Parameter(description = "用户信息") @RequestBody VUser user) {
         try {
             VUser newUser = userService.getById(id);
@@ -136,6 +138,7 @@ public class UserController extends ResultUtil {
 
     @Operation(summary = "删除用户")
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Authorization")
     public ResponseEntity<Object> deleteUser(@Parameter(description = "用户Id") @PathVariable Integer id) {
         try {
             userService.removeById(id);
