@@ -3,11 +3,14 @@ package com.base.common.filter;
 import com.base.common.utils.JwtUtils;
 import com.base.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -41,7 +45,11 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtils.getUsernameFromToken(jwt);
             } catch (ExpiredJwtException e) {
-                // 处理过期的 JWT
+                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT Token 已过期");
+                return;
+            } catch (JwtException e) {
+                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "无效的 JWT Token");
+                return;
             }
         }
 
@@ -53,9 +61,20 @@ public class JwtFilter extends OncePerRequestFilter {
                             userDetails, null, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                } else {
+                    sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "无效的 JWT Token");
+                    return;
                 }
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        String errorJson = "{\"message\": \"" + message + "\"}";
+        response.getWriter().write(errorJson);
     }
 }

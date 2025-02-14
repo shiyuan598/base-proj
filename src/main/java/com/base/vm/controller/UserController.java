@@ -35,7 +35,7 @@ public class UserController extends ResultUtil {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Operation(summary = "用户分页列表", security = { @SecurityRequirement(name = "Authorization") })
+    @Operation(summary = "用户分页列表")
     @GetMapping
     @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserPageResponse.class)))
     public ResponseEntity<Object> listUsers(@Parameter(description = "模糊搜索关键字") @RequestParam(required = false) String blurry,
@@ -81,7 +81,7 @@ public class UserController extends ResultUtil {
         }
     }
 
-    @Operation(summary = "查询司机", security = { @SecurityRequirement(name = "Authorization") })
+    @Operation(summary = "查询司机")
     @GetMapping("/driver")
     public ResponseEntity<Object> getDriver(@Parameter(description = "姓名") @RequestParam(required = false) String name) {
         try {
@@ -98,7 +98,6 @@ public class UserController extends ResultUtil {
 
     @Operation(summary = "添加用户")
     @PostMapping
-    @SecurityRequirement(name = "Authorization")
     public ResponseEntity<Object> addUser(@Parameter(description = "用户") @RequestBody AddUserDTO userDto) {
         try {
             VUser user = new VUser();
@@ -123,7 +122,6 @@ public class UserController extends ResultUtil {
 
     @Operation(summary = "更新用户")
     @PutMapping("/{id}")
-    @SecurityRequirement(name = "Authorization")
     public ResponseEntity<Object> updateUser(@Parameter(description = "用户Id") @PathVariable Integer id, @Parameter(description = "用户信息") @RequestBody VUser user) {
         try {
             VUser newUser = userService.getById(id);
