@@ -52,11 +52,8 @@ public class Knife4jConfig {
 
     @Bean
     public OperationCustomizer operationCustomizer(RequestMappingHandlerMapping requestMappingHandlerMapping) {
-        // 缓存请求映射信息
-        Map<HandlerMethod, RequestMappingInfo> handlerMethodMappingInfoMap = new HashMap<>();
-        for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : requestMappingHandlerMapping.getHandlerMethods().entrySet()) {
-            handlerMethodMappingInfoMap.put(entry.getValue(), entry.getKey());
-        }
+        // 获取所有请求映射信息
+        Map<HandlerMethod, RequestMappingInfo> handlerMethodMappingInfoMap = getRequestMappingInfo(requestMappingHandlerMapping);
 
         return (Operation operation, HandlerMethod handlerMethod) -> {
             try {
@@ -65,38 +62,35 @@ public class Knife4jConfig {
                     Set<String> patterns = getPatterns(mappingInfo);
                     if (!patterns.isEmpty()) {
                         String path = patterns.iterator().next();
-                        boolean isExcluded = false;
-                        for (String excludedPath : EXCLUDED_PATHS) {
-                            if (pathMatcher.match(excludedPath, path)) {
-                                isExcluded = true;
-                                break;
-                            }
-                        }
-
-                        if (isExcluded) {
-                            operation.setSecurity(Collections.emptyList());
-                        } else {
-                            operation.setSecurity(Collections.singletonList(
-                                    new SecurityRequirement().addList(SECURITY_SCHEME_NAME)
-                            ));
-                        }
+                        setSecurityForPath(operation, path);
                     }
                 }
             } catch (Exception e) {
-                System.err.println("Error in operationCustomizer: " + e.getMessage());
                 e.printStackTrace();
             }
-
             return operation;
         };
     }
 
+    private Map<HandlerMethod, RequestMappingInfo> getRequestMappingInfo(RequestMappingHandlerMapping requestMappingHandlerMapping) {
+        Map<HandlerMethod, RequestMappingInfo> handlerMethodMappingInfoMap = new HashMap<>();
+        requestMappingHandlerMapping.getHandlerMethods().forEach((info, method) -> handlerMethodMappingInfoMap.put(method, info));
+        return handlerMethodMappingInfoMap;
+    }
+
+    private void setSecurityForPath(Operation operation, String path) {
+        boolean isExcluded = Arrays.stream(EXCLUDED_PATHS)
+                .anyMatch(excludedPath -> pathMatcher.match(excludedPath, path));
+        operation.setSecurity(isExcluded ? Collections.emptyList() : Collections.singletonList(new SecurityRequirement().addList(SECURITY_SCHEME_NAME)));
+    }
+
     private Set<String> getPatterns(RequestMappingInfo mappingInfo) throws Exception {
-        if (hasMethod(mappingInfo.getClass(), "getPatternValues")) {
+        Set<String> patterns = new HashSet<>();
+        if (mappingInfo.getClass().getMethod("getPatternValues") != null) {
             Method method = mappingInfo.getClass().getMethod("getPatternValues");
             Object result = method.invoke(mappingInfo);
             if (result instanceof Set) {
-                return (Set<String>) result;
+                patterns = (Set<String>) result;
             }
         } else {
             Method patternsConditionMethod = mappingInfo.getClass().getMethod("getPatternsCondition");
@@ -105,19 +99,10 @@ public class Knife4jConfig {
                 Method patternsMethod = patternsCondition.getClass().getMethod("getPatterns");
                 Object result = patternsMethod.invoke(patternsCondition);
                 if (result instanceof Set) {
-                    return (Set<String>) result;
+                    patterns = (Set<String>) result;
                 }
             }
         }
-        return Collections.emptySet();
-    }
-
-    private boolean hasMethod(Class<?> clazz, String methodName) {
-        try {
-            clazz.getMethod(methodName);
-            return true;
-        } catch (NoSuchMethodException e) {
-            return false;
-        }
+        return patterns;
     }
 }
