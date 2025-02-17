@@ -11,6 +11,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -29,9 +34,12 @@ public class SecurityConfig {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 启用跨域配置
                 .authorizeHttpRequests(auth -> auth
                         // 放行登录接口
                         .requestMatchers("/auth/login", "/auth/register", "/auth/forgetPassword").permitAll()
+                        .requestMatchers("/vehicle/count").permitAll()
+                        .requestMatchers("/file/download/**").permitAll()
                         // 放行 Knife4j 和 Swagger 文档相关路径
                         .requestMatchers(
                                 "/doc.html",                 // Knife4j 文档页面
@@ -56,5 +64,24 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // 允许所有来源的跨域请求
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        // 允许所有请求方法
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // 允许所有请求头
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        // 允许携带凭证（如 Cookie）
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // 对所有接口都有效
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 }

@@ -22,7 +22,7 @@ import java.util.*;
 @Configuration
 public class Knife4jConfig {
     private static final String SECURITY_SCHEME_NAME = "Authorization";
-    private static final String[] EXCLUDED_PATHS = {"/auth/**"};
+    private static final String[] EXCLUDED_PATHS = {"/auth/**", "/vehicle/count"};
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Bean
