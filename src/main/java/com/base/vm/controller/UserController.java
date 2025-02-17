@@ -1,6 +1,7 @@
 package com.base.vm.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.base.common.exception.BadRequestException;
@@ -8,6 +9,7 @@ import com.base.common.utils.ResultUtil;
 import com.base.vm.entity.VUser;
 import com.base.vm.entity.dto.AddUserDTO;
 import com.base.vm.entity.vo.user.UserPageResponse;
+import com.base.vm.entity.vo.user.UserVO;
 import com.base.vm.service.UserService;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,11 +20,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Tag(name = "用户相关")
@@ -75,7 +80,17 @@ public class UserController extends ResultUtil {
                 // 默认按id降序
                 queryWrapper.orderByDesc(VUser::getId);
             }
-            return success(true, userService.page(new Page<>(currentPage, pageSize), queryWrapper));
+            IPage<VUser> userPage = userService.page(new Page<>(currentPage, pageSize), queryWrapper);
+            List<VUser> userList = userPage.getRecords();
+            List<UserVO> userVOList = new ArrayList<>();
+            for (VUser user : userList) {
+                UserVO userVO = new UserVO();
+                BeanUtils.copyProperties(user, userVO);
+                userVOList.add(userVO);
+            }
+            Page<UserVO> userVOPage = new Page<>(userPage.getCurrent(), userPage.getSize(), userPage.getTotal());
+            userVOPage.setRecords(userVOList);
+            return success(true, userVOPage);
         } catch (BadRequestException e) {
             return fail(false, "失败");
         }
@@ -83,6 +98,7 @@ public class UserController extends ResultUtil {
 
     @Operation(summary = "查询司机")
     @GetMapping("/driver")
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserVO.class)))
     public ResponseEntity<Object> getDriver(@Parameter(description = "姓名") @RequestParam(required = false) String name) {
         try {
             LambdaQueryWrapper<VUser> wrapper = new LambdaQueryWrapper<>();
@@ -90,7 +106,14 @@ public class UserController extends ResultUtil {
                 wrapper.like(VUser::getName, name);
             }
             wrapper.eq(VUser::getRole, 2);
-            return success(true, userService.list(wrapper));
+            List<VUser> userList = userService.list(wrapper);
+            List<UserVO> userVOList = new ArrayList<>();
+            for (VUser user : userList) {
+                UserVO userVO = new UserVO();
+                BeanUtils.copyProperties(user, userVO);
+                userVOList.add(userVO);
+            }
+            return success(true, userVOList);
         } catch (RuntimeException e) {
             return fail(false, "失败");
         }

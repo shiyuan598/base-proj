@@ -1,8 +1,7 @@
 package com.base.vm.entity.vo.user;
 
-import com.base.vm.entity.VUser;
 import com.base.vm.entity.vo.BasePageResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "用户分页列表响应对象")
-public class UserPageResponse extends BasePageResponse<VUser> {}
+public class UserPageResponse extends BasePageResponse<UserVO> {}
