@@ -72,7 +72,7 @@ public class SecurityConfig {
         // 允许所有来源的跨域请求
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         // 允许所有请求方法
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
         // 允许所有请求头
         configuration.setAllowedHeaders(Arrays.asList("*"));
         // 允许携带凭证（如 Cookie）

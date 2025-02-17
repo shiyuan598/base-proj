@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -128,6 +129,59 @@ public class FileController extends ResultUtil {
             }
         } catch (MalformedURLException e) {
             throw new BadRequestException("文件下载失败");
+        }
+    }
+
+    /**
+     * 分块文件下载接口
+     * @param fileName 要下载的文件名
+     * @param rangeHeader 客户端发送的 Range 请求头
+     * @return 文件的分块资源
+     */
+    @Operation(summary = "分块文件下载")
+    @GetMapping("/download/range/{fileName}")
+    public ResponseEntity<Resource> downloadFileRange(@PathVariable String fileName, @RequestHeader(value = "Range", required = false) String rangeHeader) {
+        try {
+            // 构建文件路径
+            Path filePath = Paths.get(UPLOAD_DIR).resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            // 检查文件是否存在
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new BadRequestException("文件不存在或无法读取");
+            }
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", fileName);
+
+            long fileSize = Files.size(filePath);
+
+            if (rangeHeader == null) {
+                // 完整下载
+                headers.setContentLength(fileSize);
+                return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+            }
+
+            // 分块下载
+            String[] range = rangeHeader.substring("bytes=".length()).split("-");
+            long start = Long.parseLong(range[0]);
+            long end = range.length > 1 ? Long.parseLong(range[1]) : fileSize - 1;
+            long contentLength = end - start + 1;
+
+            headers.set("Accept-Ranges", "bytes");
+            headers.setContentLength(contentLength);
+            headers.set("Content-Range", "bytes " + start + "-" + end + "/" + fileSize);
+
+            byte[] content = Files.readAllBytes(filePath);
+            byte[] chunk = new byte[(int) contentLength];
+            System.arraycopy(content, (int) start, chunk, 0, (int) contentLength);
+
+            return new ResponseEntity<>(new org.springframework.core.io.ByteArrayResource(chunk), headers, HttpStatus.PARTIAL_CONTENT);
+        } catch (MalformedURLException e) {
+            throw new BadRequestException("文件下载失败");
+        } catch (IOException e) {
+            throw new BadRequestException("读取文件时出错");
         }
     }
 }
