@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+//设置序列化时忽略值为 null 的属性
 @Configuration
 public class JacksonConfig {
     @Bean
