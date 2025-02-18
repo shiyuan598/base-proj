@@ -1,10 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件下载时间比较</title>
 </head>
+
 <body>
-$END$
+<button id="downloadFullButton">完整下载</button>
+<button id="downloadRangeButton">分块下载</button>
+<div id="fullDownloadTime"></div>
+<div id="rangeDownloadTime"></div>
+<script>
+    const fullDownloadButton = document.getElementById('downloadFullButton');
+    const rangeDownloadButton = document.getElementById('downloadRangeButton');
+    const fullDownloadTimeDiv = document.getElementById('fullDownloadTime');
+    const rangeDownloadTimeDiv = document.getElementById('rangeDownloadTime');
+
+    const fileName = '软件.rar'; // 替换为实际的文件名
+    const baseUrl = 'http://localhost:9001/api/file'; // 替换为实际的后端服务地址
+
+    fullDownloadButton.addEventListener('click', async () => {
+        const startTime = performance.now();
+        try {
+            const response = await fetch(`${baseUrl}/download/${fileName}`);
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(url);
+            const endTime = performance.now();
+            const downloadTime = endTime - startTime;
+            fullDownloadTimeDiv.textContent = `完整下载耗时: ${downloadTime.toFixed(2)} 毫秒`;
+        } catch (error) {
+            console.error('完整下载出错:', error);
+        }
+    });
+
+    const chunkSize = 1024 * 1024; // 每个分块的大小为 1MB
+    rangeDownloadButton.addEventListener('click', async () => {
+        const startTime = performance.now();
+        try {
+            // 获取文件总大小
+            const headResponse = await fetch(`${baseUrl}/download/${fileName}`, { method: 'HEAD' });
+            const fileSize = parseInt(headResponse.headers.get('Content-Length'), 10);
+
+            const numChunks = Math.ceil(fileSize / chunkSize);
+            const chunks = [];
+
+            for (let i = 0; i < numChunks; i++) {
+                const start = i * chunkSize;
+                const end = Math.min(start + chunkSize - 1, fileSize - 1);
+
+                const chunkResponse = await fetch(`${baseUrl}/download/range/${fileName}`, {
+                    headers: {
+                        Range: `bytes=${start}-${end}`
+                    }
+                });
+
+                const chunk = await chunkResponse.arrayBuffer();
+                chunks.push(chunk);
+            }
+
+            // 合并所有分块
+            const blob = new Blob(chunks);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            const endTime = performance.now();
+            const downloadTime = endTime - startTime;
+            rangeDownloadTimeDiv.textContent = `分块下载耗时: ${downloadTime.toFixed(2)} 毫秒`;
+        } catch (error) {
+            console.error('分块下载出错:', error);
+        }
+    });
+</script>
 </body>
+
 </html>

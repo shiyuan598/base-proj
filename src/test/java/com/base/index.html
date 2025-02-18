@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件上传下载示例</title>
+</head>
+
+<body>
+    <h1>文件上传下载示例</h1>
+
+    <!-- 单文件上传 -->
+    <h2>单文件上传</h2>
+    <input type="file" id="singleFileInput">
+    <button onclick="uploadSingleFile()">上传单个文件</button>
+
+    <!-- 多文件上传 -->
+    <h2>多文件上传</h2>
+    <input type="file" id="multipleFileInput" multiple>
+    <input type="text" id="paramInput" placeholder="输入其他参数">
+    <button onclick="uploadMultipleFiles()">上传多个文件</button>
+
+    <!-- 文件下载 -->
+    <h2>文件下载</h2>
+    <input type="text" id="fileNameInput" placeholder="输入要下载的文件名">
+    <button onclick="downloadFile()">下载文件</button>
+
+    <script>
+        const baseUrl = 'http://localhost:9001/api/file';
+
+        async function uploadSingleFile() {
+            const fileInput = document.getElementById('singleFileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('请选择要上传的文件');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`${baseUrl}/upload`, {
+                    method: 'POST',
+                    headers: {
+                      Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ3YW5nc2hpeXVhbiIsImlhdCI6MTczOTc1NjU1MCwiZXhwIjoxNzM5ODQyOTUwfQ.Ect7IoaeOiToOPoGlw4dC9sY3tsX74e9egjEmDShMF4`
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                alert('文件上传失败');
+            }
+        }
+
+        async function uploadMultipleFiles() {
+            const fileInput = document.getElementById('multipleFileInput');
+            const files = fileInput.files;
+            const paramInput = document.getElementById('paramInput');
+            const param = paramInput.value;
+
+            if (files.length === 0) {
+                alert('请选择要上传的文件');
+                return;
+            }
+
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
+            formData.append('param', param);
+
+            try {
+                const response = await fetch(`${baseUrl}/uploadMultiple`, {
+                    method: 'POST',
+                    headers: {
+                      Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ3YW5nc2hpeXVhbiIsImlhdCI6MTczOTc1NjU1MCwiZXhwIjoxNzM5ODQyOTUwfQ.Ect7IoaeOiToOPoGlw4dC9sY3tsX74e9egjEmDShMF4`
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                alert('文件上传失败');
+            }
+        }
+
+        async function downloadFile() {
+            const fileNameInput = document.getElementById('fileNameInput');
+            const fileName = fileNameInput.value;
+
+            if (!fileName) {
+                alert('请输入要下载的文件名');
+                return;
+            }
+
+            window.open(`${baseUrl}/download/${fileName}`, '_blank');
+        }
+    </script>
+</body>
+
+</html>
