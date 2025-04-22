@@ -148,6 +148,9 @@ public class UserController extends ResultUtil {
     public ResponseEntity<Object> updateUser(@Parameter(description = "用户Id") @PathVariable Integer id, @Parameter(description = "用户信息") @RequestBody VUser user) {
         try {
             VUser newUser = userService.getById(id);
+            if (newUser == null) {
+                return fail(false, "用户不存在");
+            }
             Optional.ofNullable(user.getName()).ifPresent(newUser::setName);
             Optional.ofNullable(user.getTelephone()).ifPresent(newUser::setTelephone);
             userService.updateById(newUser);

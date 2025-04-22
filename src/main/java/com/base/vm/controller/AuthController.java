@@ -43,7 +43,7 @@ public class AuthController extends ResultUtil {
                 return success(true, user);
             } else {
                 // 用户名或密码错误
-                return success(true, "Invalid username or password");
+                return success(false, "Invalid username or password");
             }
         } catch (BadRequestException e) {
             return fail(false, "失败");
@@ -86,7 +86,7 @@ public class AuthController extends ResultUtil {
             if (result) {
                 return success(true, "密码修改成功");
             } else {
-                return success(true, "用户名或手机号不正确，密码修改失败");
+                return success(false, "用户名或手机号不正确，密码修改失败");
             }
         } catch (Exception e) {
             return fail(false, "密码修改过程中出现错误");

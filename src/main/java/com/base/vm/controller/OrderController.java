@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -87,10 +88,15 @@ public class OrderController extends ResultUtil {
     }
 
     @Operation(summary = "更新订单")
-    @PutMapping
-    public ResponseEntity<Object> updateOrder(@RequestBody VOrder order) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateOrder(@Parameter(description = "订单Id") @PathVariable Integer id, @RequestBody VOrder order) {
         try {
-            return success(true, orderService.save(order));
+            VOrder newOrder = orderService.getById(id);
+            if (newOrder == null) {
+                return fail(false, "订单不存在");
+            }
+            BeanUtils.copyProperties(order, newOrder);
+            return success(true, orderService.updateById(newOrder));
         } catch (BadRequestException e) {
             return fail(false, "失败");
         }

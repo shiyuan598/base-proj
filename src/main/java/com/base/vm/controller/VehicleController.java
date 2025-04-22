@@ -171,6 +171,9 @@ public class VehicleController extends ResultUtil {
     public ResponseEntity<Object> updateVehicle(@Parameter(description = "车辆ID") @PathVariable(value = "id") Integer id, @Parameter(description = "车辆信息") @RequestBody UpdateVehicleDTO vehicleDTO) {
         try {
             VVehicle vehicle = vehicleService.getById(id);
+            if (vehicle == null) {
+                return fail(false, "车辆不存在");
+            }
             Optional.ofNullable(vehicleDTO.getVehicleNo()).ifPresent(vehicle::setVehicleNo);
             Optional.ofNullable(vehicleDTO.getProject()).ifPresent(vehicle::setProject);
             Optional.ofNullable(vehicleDTO.getState()).ifPresent(vehicle::setState);
