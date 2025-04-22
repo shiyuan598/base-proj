@@ -90,9 +90,9 @@ public class UserController extends ResultUtil {
             }
             Page<UserVO> userVOPage = new Page<>(userPage.getCurrent(), userPage.getSize(), userPage.getTotal());
             userVOPage.setRecords(userVOList);
-            return success(true, userVOPage);
+            return success(userVOPage);
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -113,9 +113,9 @@ public class UserController extends ResultUtil {
                 BeanUtils.copyProperties(user, userVO);
                 userVOList.add(userVO);
             }
-            return success(true, userVOList);
+            return success(userVOList);
         } catch (RuntimeException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -137,9 +137,9 @@ public class UserController extends ResultUtil {
                 throw new RuntimeException("用户名已存在");
             }
             userService.save(user);
-            return success(true, "成功");
+            return success("成功");
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -149,14 +149,14 @@ public class UserController extends ResultUtil {
         try {
             VUser newUser = userService.getById(id);
             if (newUser == null) {
-                return fail(false, "用户不存在");
+                return fail("用户不存在");
             }
             Optional.ofNullable(user.getName()).ifPresent(newUser::setName);
             Optional.ofNullable(user.getTelephone()).ifPresent(newUser::setTelephone);
             userService.updateById(newUser);
-            return success(true, "成功");
+            return success("成功");
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -166,9 +166,9 @@ public class UserController extends ResultUtil {
     public ResponseEntity<Object> deleteUser(@Parameter(description = "用户Id") @PathVariable Integer id) {
         try {
             userService.removeById(id);
-            return success(true, "成功");
+            return success("成功");
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 }

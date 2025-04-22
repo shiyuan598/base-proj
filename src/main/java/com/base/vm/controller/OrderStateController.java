@@ -29,9 +29,9 @@ public class OrderStateController extends ResultUtil {
     @GetMapping("/dict")
     public ResponseEntity<Object> listOrderStateDict() {
         try {
-            return success(true, stateService.findAll());
+            return success(stateService.findAll());
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 }

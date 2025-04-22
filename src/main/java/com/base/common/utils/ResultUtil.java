@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ResultUtil {
-    public static ResponseEntity<Object> success(boolean code, Object data){
+    public static ResponseEntity<Object> success(Object data){
         Map<String, Object> map = new HashMap<>(4);
-        map.put("success", code);
+        map.put("success", true);
         // 如果data是page对象，需要将其中的records属性提取出来
         // 同时把分页相关的total、size、current等属性也提取出来放在pagination中
         if (data instanceof Page<?> page) {
@@ -27,10 +27,17 @@ public class ResultUtil {
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
-    public static ResponseEntity<Object> fail(boolean code, String msg){
+    public static ResponseEntity<Object> fail(String msg){
         Map<String, Object> map = new HashMap<>(4);
-        map.put("success", code);
+        map.put("success", false);
         map.put("msg", msg);
         return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
+    public static ResponseEntity<Object> error(String msg){
+        Map<String, Object> map = new HashMap<>(4);
+        map.put("success", false);
+        map.put("msg", msg);
+        return new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

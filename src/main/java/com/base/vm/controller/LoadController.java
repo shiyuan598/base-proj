@@ -31,9 +31,9 @@ public class LoadController extends ResultUtil {
     @GetMapping("/dict")
     public ResponseEntity<Object> listLoadDict() {
         try {
-            return success(true, loadService.findAll());
+            return success(loadService.findAll());
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 }

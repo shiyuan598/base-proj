@@ -40,13 +40,13 @@ public class AuthController extends ResultUtil {
                 String token = jwtUtils.generateToken(username);
                 user.setPassword(""); // 抹掉密码
                 user.setToken(token);
-                return success(true, user);
+                return success(user);
             } else {
                 // 用户名或密码错误
-                return success(false, "Invalid username or password");
+                return fail("用户名或手机号不正确");
             }
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -59,7 +59,7 @@ public class AuthController extends ResultUtil {
             wrapper.eq(VUser::getUsername, user.getUsername());
             long count = userService.count(wrapper);
             if (count > 0) {
-                throw new RuntimeException("用户名已存在");
+                return fail("用户名已存在");
             }
 
             // 注册用户
@@ -69,9 +69,9 @@ public class AuthController extends ResultUtil {
             String token = jwtUtils.generateToken(user.getUsername());
             user.setPassword(""); // 抹掉密码
             user.setToken(token);
-            return success(true, user);
+            return success(user);
         } catch (Exception e) {
-            return fail(false, "Registration failed");
+            return error(e.getMessage());
         }
     }
 
@@ -84,12 +84,12 @@ public class AuthController extends ResultUtil {
         try {
             boolean result = userService.forgetPassword(username, telephone, newPassword);
             if (result) {
-                return success(true, "密码修改成功");
+                return success("密码修改成功");
             } else {
-                return success(false, "用户名或手机号不正确，密码修改失败");
+                return fail("用户名或手机号不正确，密码修改失败");
             }
         } catch (Exception e) {
-            return fail(false, "密码修改过程中出现错误");
+            return error(e.getMessage());
         }
     }
 }

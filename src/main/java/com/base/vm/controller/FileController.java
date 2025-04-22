@@ -44,7 +44,7 @@ public class FileController extends ResultUtil {
         try {
             // 检查文件是否为空
             if (file.isEmpty()) {
-                throw new BadRequestException("上传的文件为空");
+                return fail("上传的文件为空");
             }
 
             // 获取文件名
@@ -60,9 +60,9 @@ public class FileController extends ResultUtil {
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            return success(true, "文件上传成功");
+            return success("文件上传成功");
         } catch (IOException e) {
-            return fail(false, "文件上传失败");
+            return error("文件上传失败");
         }
     }
 
@@ -77,7 +77,7 @@ public class FileController extends ResultUtil {
     public ResponseEntity<Object> uploadMultipleFiles(@RequestParam("files") List<MultipartFile> files, @RequestParam("param") String param) {
         try {
             if (files.isEmpty()) {
-                throw new BadRequestException("上传的文件列表为空");
+                return fail("上传的文件为空");
             }
 
             // 构建文件保存路径
@@ -95,9 +95,9 @@ public class FileController extends ResultUtil {
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            return success(true, "多文件上传成功，参数: " + param);
+            return success("多文件上传成功，参数: " + param);
         } catch (IOException e) {
-            return fail(false, "多文件上传失败");
+            return error(e.getMessage());
         }
     }
 

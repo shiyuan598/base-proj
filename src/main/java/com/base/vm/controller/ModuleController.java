@@ -34,9 +34,9 @@ public class ModuleController extends ResultUtil {
     public ResponseEntity<Object> listModuleDict() {
         try {
             List<VModule> data = moduleService.findAll();
-            return success(true, data);
+            return success(data);
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 }

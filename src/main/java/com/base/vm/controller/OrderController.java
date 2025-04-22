@@ -58,9 +58,9 @@ public class OrderController extends ResultUtil {
             queryDto.setSubscriber(subscriber);
 
             IPage<OrderListVO> result = orderService.getOrderPage(queryDto);
-            return success(true, result);
+            return success(result);
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -71,9 +71,9 @@ public class OrderController extends ResultUtil {
                     schema = @Schema(implementation = VOrder.class)))
     public ResponseEntity<Object> getOrder(@PathVariable Long id) {
         try {
-            return success(true, orderService.getById(id));
+            return success(orderService.getById(id));
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -81,9 +81,9 @@ public class OrderController extends ResultUtil {
     @PostMapping
     public ResponseEntity<Object> addOrder(@RequestBody VOrder order) {
         try {
-            return success(true, orderService.save(order));
+            return success(orderService.save(order));
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -93,12 +93,12 @@ public class OrderController extends ResultUtil {
         try {
             VOrder newOrder = orderService.getById(id);
             if (newOrder == null) {
-                return fail(false, "订单不存在");
+                return fail("订单不存在");
             }
             BeanUtils.copyProperties(order, newOrder);
-            return success(true, orderService.updateById(newOrder));
+            return success(orderService.updateById(newOrder));
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 }

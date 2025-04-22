@@ -29,9 +29,9 @@ public class ProjectController extends ResultUtil {
     @GetMapping
     public ResponseEntity<Object> index() {
         try {
-            return success(true, projectService.findAll());
+            return success(projectService.findAll());
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return fail("失败");
         }
     }
 }

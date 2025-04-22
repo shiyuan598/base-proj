@@ -59,9 +59,9 @@ public class VehicleController extends ResultUtil {
             queryDto.setSort(sort);
             queryDto.setOrder(order);
             IPage<Map<String, Object>> result = vehicleService.getVehiclePage(queryDto);
-            return success(true, result);
+            return success(result);
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -94,9 +94,9 @@ public class VehicleController extends ResultUtil {
             queryDto.setSort(sort);
             queryDto.setOrder(order);
             IPage<VehicleListVO> result = vehicleService.getVehicleVOPage(queryDto);
-            return success(true, result);
+            return success(result);
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -109,9 +109,9 @@ public class VehicleController extends ResultUtil {
     })
     public ResponseEntity<Object> countVehicle() {
         try {
-            return success(true, vehicleService.count());
+            return success(vehicleService.count());
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -124,9 +124,9 @@ public class VehicleController extends ResultUtil {
     })
     public ResponseEntity<Object> allVehicles() {
         try {
-            return success(true, vehicleService.getAvailableVehicles());
+            return success(vehicleService.getAvailableVehicles());
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -141,9 +141,9 @@ public class VehicleController extends ResultUtil {
             vehicle.setPlace(vehicleDTO.getPlace());
             vehicle.setReason(vehicleDTO.getReason());
             vehicleService.save(vehicle);
-            return success(true, "成功");
+            return success("成功");
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -160,9 +160,9 @@ public class VehicleController extends ResultUtil {
         try {
             LambdaQueryWrapper<VVehicle> wrapper = new LambdaQueryWrapper<>();
             wrapper.eq(VVehicle::getVehicleNo, vehicleNo);
-            return success(true, vehicleService.exists(wrapper));
+            return success(vehicleService.exists(wrapper));
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -172,7 +172,7 @@ public class VehicleController extends ResultUtil {
         try {
             VVehicle vehicle = vehicleService.getById(id);
             if (vehicle == null) {
-                return fail(false, "车辆不存在");
+                return fail("车辆不存在");
             }
             Optional.ofNullable(vehicleDTO.getVehicleNo()).ifPresent(vehicle::setVehicleNo);
             Optional.ofNullable(vehicleDTO.getProject()).ifPresent(vehicle::setProject);
@@ -180,9 +180,9 @@ public class VehicleController extends ResultUtil {
             Optional.ofNullable(vehicleDTO.getPlace()).ifPresent(vehicle::setPlace);
             Optional.ofNullable(vehicleDTO.getReason()).ifPresent(vehicle::setReason);
             vehicleService.updateById(vehicle);
-            return success(true, "成功");
+            return success("成功");
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 
@@ -191,9 +191,9 @@ public class VehicleController extends ResultUtil {
     public ResponseEntity<Object> deleteVehicle(@Parameter(description = "车辆id") @PathVariable Integer id) {
         try {
             vehicleService.removeById(id);
-            return success(true, null);
+            return success("成功");
         } catch (BadRequestException e) {
-            return fail(false, "失败");
+            return error(e.getMessage());
         }
     }
 }
